@@ -1,0 +1,123 @@
+
+#include "wincompat.h"
+#include <fmod.hpp>
+#include <fmod_errors.h>
+#include <sstream>
+
+#define SINE_WAVE       0
+#define SQUARE_WAVE     1
+#define TRIANGLE_WAVE   2
+#define SAW_WAVE        4
+#define WHITE_NOISE     5
+
+using namespace std;
+
+
+class LireCode
+{
+    public:
+        LireCode(int wave,const char* file,int spc=100, int ltr=10)
+        {
+            WaveType = wave;
+            result = FMOD::System_Create(&system);
+            ERRCHECK(result);
+            unsigned int version;
+            result = system->getVersion(&version);
+            ERRCHECK(result);
+
+            if (version < FMOD_VERSION)
+            {
+                printf("Error!  You are using an old version of FMOD %08x.  This program requires %08x\n", version, FMOD_VERSION);
+                exit(0);
+            }
+
+            result = system->init(32, FMOD_INIT_NORMAL, 0);
+            ERRCHECK(result);
+
+            result = system->createDSPByType(FMOD_DSP_TYPE_OSCILLATOR, &dsp);
+            ERRCHECK(result);
+            result = dsp->setParameter(FMOD_DSP_OSCILLATOR_RATE, 440.0f);
+            ERRCHECK(result);
+
+            result = system->playDSP(FMOD_CHANNEL_REUSE, dsp, true, &channel);
+
+            channel->setVolume(1.0f);
+            result = dsp->setParameter(FMOD_DSP_OSCILLATOR_TYPE, WaveType);
+            channel->setPan(0.0);
+            ERRCHECK(result);
+
+            LetterTime=ltr;
+            SpaceTime=spc;
+            filename =file;
+
+        };
+
+        void ReadCode()
+        {
+            FILE* f=fopen(filename.c_str(),"r");
+            if (!f)
+            {
+                cout<<filename<<" n'est pas valide."<<endl;
+                return;
+            }
+            char c;
+            int i=0;
+
+            while (!feof(f))
+            {
+                c=getc(f);
+
+                if (c != '\n')
+                {
+                    printf("%c",c);
+                    Sleep(1);
+                    ++i;
+                    continue;
+                }
+                if (i==0){
+                    continue;
+                }
+
+                printf(" <%d>\n",i);
+
+
+                channel->setPaused(false);
+                int freq=1500*i;
+                channel->setFrequency(freq);
+                //Sleep(SpaceTime);
+                //channel->setPaused(true);
+
+                i=0;
+            }
+
+            fclose(f);
+        };
+
+        ~LireCode()
+        {
+            result = dsp->release();
+            ERRCHECK(result);
+            result = system->close();
+            ERRCHECK(result);
+            result = system->release();
+            ERRCHECK(result);
+        };
+
+    private :
+        int WaveType;
+        FMOD::System    *system;
+        FMOD::Channel   *channel;
+        FMOD::DSP       *dsp;
+        FMOD_RESULT      result;
+        int SpaceTime,LetterTime;
+        string filename;
+
+        void ERRCHECK(FMOD_RESULT result)
+        {
+            if (result != FMOD_OK)
+            {
+                printf("FMOD error! (%d) %s\n", result, FMOD_ErrorString(result));
+                exit(-1);
+            }
+        };
+};

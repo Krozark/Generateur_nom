@@ -1,0 +1,83 @@
+
+
+
+#include "GenMot.hpp"
+#include "LireMot.hpp"
+
+
+
+
+
+#define NB_MOTS 10
+#define SLEEP   10
+
+
+
+
+int main()
+{
+//    int i;
+    int boucle=0;
+    FILE * f=NULL;
+    f=fopen("res.txt","a");
+    srand(time(NULL));
+
+
+    while (boucle < NB_MOTS)
+    {
+       
+
+
+        /*int nb = (int)randRange(MIN,MAX);
+        char res[nb+1];
+        for (i=0;i<nb;++i)
+        {
+            char c;
+            if (i <2)
+                c=GenLet(VOY_RATIO,MERDE_RATIO);
+            else
+            {
+                int Voy=IsAEOIUY(res[i-1])+IsAEOIUY(res[i-2]);
+                if (Voy==1)//une Cons + 1 voy
+                    c=GenLet(VOY_RATIO,MERDE_RATIO);
+                else if (Voy == 0)
+                    c=GenVoy();
+                else
+                    c=GenCon(MERDE_RATIO);
+
+            }
+
+            res[i]=c;
+            channel->setFrequency(c*c*5+20);
+            system->update();
+
+            {
+                float frequency = 0, volume = 0, pan = 0;
+                bool playing = false;
+
+                if (channel)
+                {
+                    channel->getFrequency(&frequency);
+                    channel->getVolume(&volume);
+                    channel->getPan(&pan);
+                    channel->isPlaying(&playing);
+                }
+
+                printf("%c : Frequency %.1f Volume %.1f Pan %.1f  \r",c, frequency, volume, pan);
+                fflush(stdout);
+            }
+            Sleep(SLEEP);
+        }
+        res[nb]='\0';
+
+        printf("\n%d  %s\n",nb,res);
+        fprintf(f,"%s\n",res);*/
+        printf("%s \n",GenMot::GenWord(4,7));
+        ++boucle;
+
+    }
+
+    fclose(f);
+
+    return 0;
+}

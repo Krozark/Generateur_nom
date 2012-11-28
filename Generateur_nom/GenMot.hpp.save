@@ -1,0 +1,66 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+#define MIN  4
+#define MAX 7
+
+#define Y_POS   6
+#define MERDE   3
+#define AUTRE   26 - Y_POS -MERDE  /*q+*/
+
+#define VOY_RATIO 0.4
+#define MERDE_RATIO 0.1
+
+class GenMot
+{
+    public :
+        static inline double randRange(double fMin, double fMax)
+        {
+            return fMin + ((double)rand() / RAND_MAX)*(fMax - fMin);
+        };
+
+        static int IsAEOIUY(char c)
+        {
+            const char L[]={ 'a','e','i','o','u','y'};
+            int i;
+            for (i=0;i<Y_POS;++i)
+                if (c == L[i])
+                    return 1;
+            return 0;
+        };
+
+        static char GenVoy()
+        {
+            const char L[]={ 'a','e','i','o','u','y'};
+            return L[(int)randRange(0,Y_POS)];
+        };
+
+        static char GenCon()
+        {
+            const char L[]={'b','c','d','f','g','h','j','k','l','m','n','p','r','s','t','v','w'};
+            return L[(int)randRange(0,AUTRE)];
+        };
+
+        static char GenMerde()
+        {
+            const char L[]={'q','x','z'};
+            return L[(int)randRange(0,MERDE)];
+        };
+
+        static char GenLet()
+        {
+            double i=randRange(0,1);
+            if ( i < VOY_RATIO)
+                return GenVoy();
+            else
+                return GenCon();
+
+        };
+
+
+    private:
+    GenMot()
+    {
+    }
+};
